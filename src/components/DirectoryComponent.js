@@ -1,6 +1,42 @@
-import React, { Component } from "react";
+import React from "react";
 import { Card, CardImg, CardImgOverlay, CardTitle } from 'reactstrap'
-class Directory extends Component {
+
+/*Since the DirectoryComponent is a presentational component we can use functional components here.In the bellow featured component's parameter list instead of passing the whole props object we are descructuring it and pass the campsite and the onClick properties  */
+function RenderDirectoryItem({campsite, onClick}) {
+     return (
+        <Card onClick={() => onClick(campsite.id)}>     
+        <CardImg src = {campsite.image} alt = {campsite.name} />       
+        <CardImgOverlay>
+            <CardTitle>{campsite.name}</CardTitle>
+        </CardImgOverlay>
+    </Card>
+     );
+
+}
+
+function Directory(props) {
+    const directory = props.campsites.map(campsite => {
+        return (
+            <div key={campsite.id} className="col-md-5 m-1">
+                <RenderDirectoryItem campsite={campsite} onClick={props.onClick} />
+            </div>
+        )
+    });
+
+    return (
+        <div className = "container">
+            <div className = "row">
+                {directory}                           
+            </div>
+           
+        </div>
+    );
+}
+
+export default Directory;
+
+/*As we are transitioning the Directory component to be made with functional components, all of the code bellow will be commented out. To be deleted later. */
+/*  class Directory extends Component {  */
     /*constructor(props) {
         super(props);
         this.state = {
@@ -34,29 +70,29 @@ class Directory extends Component {
     /*}*/
     /*ALL OF THE ABOVE CODE WAS COMMENTED OUT AS IT WAS MOVED TO THE MAINCOMPONENT. WE ARE TURNING THE DIRECTORY COMPONENT INTO PRESENTATIONAL COMPONENT. THE MAINCOMPONENT WILL BE THE CONTAINER COMPONENT THAT WILL HOLD THE STATE */
 
-     render() {
+     /*  render() {
         const directory = this.props.campsites.map(campsite => {
             return (
-                <div key = {campsite.id} className = "col-md-5 m-1">           {/*Here we are using key so we can identify each item in the array of objects by it's unic id. The app will work fine without it but it gives warning in the console and we add it to follow best practices*/}
-                    <Card onClick={() => this.props.onClick(campsite.id)}>     {/*Here we are passing the onClick method as props from MainComponent.js */}
-                        <CardImg src = {campsite.image} alt = {campsite.name} />        {/*We are using curly braces here since we are inside JSX. We are using the map method on every item(campsite) in the campsites array of objects and we want the arrow function to return the stated properties of each one of the items. Map returns a new array. It will be rendered bellow where we added the directory variable inside the div with className="row".*/}
-                        <CardImgOverlay>
+                <div key = {campsite.id} className = "col-md-5 m-1">     */      {/*Here we are using key so we can identify each item in the array of objects by it's unic id. The app will work fine without it but it gives warning in the console and we add it to follow best practices*/}
+                    /*  <Card onClick={() => this.props.onClick(campsite.id)}>  */   {/*Here we are passing the onClick method as props from MainComponent.js */}
+                     /*   <CardImg src = {campsite.image} alt = {campsite.name} />     */   {/*We are using curly braces here since we are inside JSX. We are using the map method on every item(campsite) in the campsites array of objects and we want the arrow function to return the stated properties of each one of the items. Map returns a new array. It will be rendered bellow where we added the directory variable inside the div with className="row".*/}
+                     /*   <CardImgOverlay>
                             <CardTitle>{campsite.name}</CardTitle>
                         </CardImgOverlay>
                     </Card>
                 </div>
             );
-        });
+        });  */
 /*The bellow return is the return from the whole component. When we are ready to break out of this component and send some data back to the parent component-that is going to happend exactly in this final return statment. All the other returns above were inside the methods which are contained inside the DirectoryComponent. These methods are just being used to pass date inside the component. */
-        return (
+       /*  return (
             <div className = "container">
                 <div className = "row">
-                    {directory}                           {/*Adding a JS variable that we set up after render(). It must be inside curly braces. This directory variable and the Directory class are two separate things.*/}
-                </div>
+                    {directory}   */                    {/*Adding a JS variable that we set up after render(). It must be inside curly braces. This directory variable and the Directory class are two separate things.*/}
+               /*  </div>
                
             </div>
         );
     }
 }
 
-export default Directory;
+export default Directory; */

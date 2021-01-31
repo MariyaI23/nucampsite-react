@@ -1,7 +1,60 @@
-import React, {Component} from "react";
+import React from "react";
 import { Card, CardImg, CardImgOverlay, CardText, CardBody, CardTitle } from 'reactstrap'
 
-class CampsiteInfo extends Component {
+/*Since this component is a presentational component we will redo it using functional components. The original commented out class component bellow will be split up into 3 functional components for each of the class component's methods */
+/*In the parameter list of the first component again we are destructuring the campsites object. */
+function RenderCampsite({campsite}) {
+    return (
+        <div className = "col-md-5 m-1">
+            <Card>
+                <CardImg top src = {campsite.image} alt = {campsite.name} />
+                <CardBody>
+                    <CardTitle>{campsite.name}</CardTitle>
+                    <CardText>{campsite.description}</CardText>
+                </CardBody>
+            </Card>
+        </div>
+    )
+}
+
+function RenderComments({comments}) {
+    if(comments) {
+        return (
+            <div className="col-md-5 m-1">
+                <h4>Comments</h4>
+                {comments.map(comment =>
+                <div key={comment.id}><p>{comment.text}
+                <br/> {comment.author},{new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit'}).format(new Date(Date.parse(comment.date)))}</p>
+                </div>
+                )}
+            </div>
+        );
+    }
+    return <div /> 
+}
+
+/*Next we will turn the render method of the class component into a CampsiteInfo functional component */
+
+function CampsiteInfo(props) {
+    if(props.campsite) {
+        return (
+        <div className="container">
+            <div className = "row">
+                <RenderCampsite campsite = {props.campsite} />
+                <RenderComments comments = {props.campsite.comments} />
+            </div>
+        </div>
+        );
+    }
+    return <div />;
+}
+
+export default CampsiteInfo
+
+
+
+
+/*class CampsiteInfo extends Component {
   
     
     renderCampsite(campsite) {
@@ -54,4 +107,4 @@ class CampsiteInfo extends Component {
 }
 
 
-export default CampsiteInfo
+export default CampsiteInfo  */
