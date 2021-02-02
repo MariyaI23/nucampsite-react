@@ -43,7 +43,7 @@ export default Directory;
            selectedCampsite: null            
         };
     }*/
-     /*Above we are establishing a property selected Camspite that will keep track of the last card the user clicked on. The intial value is set to null..*/
+     /*Above we are establishing a property selectedCamspite that will keep track of the last card the user clicked on. The intial value is set to null..*/
      /*Bellow we are setting up a method that will fire up when the user selects a campsite. We are passing the campsites object. Inside this method we will update the state property with setState() method. Inside it we'll update the selectedCampsite property that we established above from null to now the campsite object which was passed into the onCamspiteSelect() method */
     /*onCampsiteSelect(campsite) {
         this.setState({selectedCampsite: campsite});
@@ -53,6 +53,7 @@ export default Directory;
     /*Here with the if statement we are checking to see if campsite is an object, if yes it will evaluate as truthy, however if campsite is null or undefined it will be falsy. If truthy it will display the chosen card to the user WITH the addl information(the description property) */
     /*The renderSelectedCampsite() method will be called in the final return statement at the end of this whole component. */
     /* The renderSelectedCamsite() method was commented out as it was moved to the CampsiteInfoComponent's renderCampsite() method*/
+    
     /*renderSelectedCampsite(campsite) {
         if(campsite) {                    
             return (
