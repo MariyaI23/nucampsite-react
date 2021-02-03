@@ -1,15 +1,15 @@
 import React from "react";
 import { Card, CardImg, CardImgOverlay, CardTitle } from 'reactstrap'
 
-/*Since the DirectoryComponent is a presentational component we can use functional components here.In the bellow featured component's parameter list instead of passing the whole props object we are descructuring it and pass the campsite and the onClick properties  */
-function RenderDirectoryItem({campsite, onClick}) {
+/*Since the DirectoryComponent is a presentational component we can use functional components here.In the bellow featured component's parameter list instead of passing the whole props object we are descructuring it and pass the campsite and the onClick properties. After installing the React-router, we removed the onClick as it is no longer handled here.  */
+function RenderDirectoryItem({campsite}) {
      return (
-        <Card onClick={() => onClick(campsite.id)}>     
-        <CardImg src = {campsite.image} alt = {campsite.name} />       
-        <CardImgOverlay>
-            <CardTitle>{campsite.name}</CardTitle>
-        </CardImgOverlay>
-    </Card>
+        <Card>     
+            <CardImg src = {campsite.image} alt = {campsite.name} />       
+            <CardImgOverlay>
+                 <CardTitle>{campsite.name}</CardTitle>
+            </CardImgOverlay>
+        </Card>
      );
 
 }
@@ -18,7 +18,7 @@ function Directory(props) {
     const directory = props.campsites.map(campsite => {
         return (
             <div key={campsite.id} className="col-md-5 m-1">
-                <RenderDirectoryItem campsite={campsite} onClick={props.onClick} />
+                <RenderDirectoryItem campsite={campsite} />
             </div>
         )
     });
@@ -53,7 +53,7 @@ export default Directory;
     /*Here with the if statement we are checking to see if campsite is an object, if yes it will evaluate as truthy, however if campsite is null or undefined it will be falsy. If truthy it will display the chosen card to the user WITH the addl information(the description property) */
     /*The renderSelectedCampsite() method will be called in the final return statement at the end of this whole component. */
     /* The renderSelectedCamsite() method was commented out as it was moved to the CampsiteInfoComponent's renderCampsite() method*/
-    
+
     /*renderSelectedCampsite(campsite) {
         if(campsite) {                    
             return (
