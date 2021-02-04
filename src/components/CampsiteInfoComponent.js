@@ -1,5 +1,6 @@
 import React from "react";
-import { Card, CardImg, CardImgOverlay, CardText, CardBody, CardTitle } from 'reactstrap'
+import { Card, CardImg, CardImgOverlay, CardText, CardBody, CardTitle, Breadcrumb, BreadcrumbItem } from 'reactstrap';
+import {Link} from "react-router-dom";
 
 /*Since this component is a presentational component we will redo it using functional components. The original commented out class component bellow will be split up into 3 functional components for each of the class component's methods */
 /*In the parameter list of the first component again we are destructuring the campsites object. */
@@ -9,7 +10,6 @@ function RenderCampsite({campsite}) {
             <Card>
                 <CardImg top src = {campsite.image} alt = {campsite.name} />
                 <CardBody>
-                    <CardTitle>{campsite.name}</CardTitle>
                     <CardText>{campsite.description}</CardText>
                 </CardBody>
             </Card>
@@ -39,6 +39,18 @@ function CampsiteInfo(props) {
     if(props.campsite) {
         return (
         <div className="container">
+            <div className="row">
+                <div className="col">
+                <Breadcrumb>
+                        <BreadcrumbItem>
+                            <Link to="/directory">Directory</Link>
+                        </BreadcrumbItem>
+                        <BreadcrumbItem active>{props.campsite.name}</BreadcrumbItem>
+                    </Breadcrumb>
+                    <h2>{props.campsite.name}</h2>
+                    <hr />
+                </div>
+            </div>
             <div className = "row">
                 <RenderCampsite campsite = {props.campsite} />
                 <RenderComments comments = {props.comments} />
