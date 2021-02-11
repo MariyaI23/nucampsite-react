@@ -1,7 +1,24 @@
 import React, { Component } from 'react';
 import { Breadcrumb, BreadcrumbItem, Button, Label, Col, Row} from 'reactstrap';
 import {Link} from "react-router-dom";
-import { Control, LocalForm } from 'react-redux-form';
+import { Control, LocalForm, Errors } from 'react-redux-form';
+
+/*Setting up functions to help with the validation of the react-redux form */
+/*the "required" function takes "val"(value) as an argument and checks if a value was received(that input was entered by user). Otherwise "val" will evaluate as false if it was undefined or null. */
+/*Then "required" will check to make sure that lenght of the "val" string received is greater than 0. If no input was entered this will evaluate as false and will create an error. */
+/*The maxLength function requires to be wrapped in another function due to the way it will be called later. The first one takes the maximum length, then the second one takes the value(the input string) */
+/*Then from inside the inner function we want to return true if the max length has not been exceeded.So !val will return true because if there is no value, then the maximum length clearly has not been exceeded OR(||)  we will also return true if the value's length is less than or equal to the maximum. If both of these conditions are false than the function will return false for maxLength and it will create an error.*/
+/*minLength works similarly. It wraps a function in a function and the inner function will return true if there is a value and if that value is greater than or equal to the minimum. If not-it will return as false for minLength and that will create an error. */
+/*Next function isNumber will check to see if the value entered is a number.We are using the + unary operator to turn the value into a number if possible, if not possible it will return NaN. Then with !NaN we are checking to see if the value is oposite of NaN. Ultimatelly if it is a valid number this(!NaN) will return as true(like saying-this is NOT NaN), otherwise-false. */
+/*With the last function we will use a regular expression to check if the email input is correct. The first part [A-Z0-9._%+-] checks to see if the first part of the email contains any of those permited letters(from A-Z), numbers(from 0-9) and symbols(._%+-). Then we check to see if there is the @ symbol and following that where the domain name would be we are permitting letters(A-Z), again numbers(0-9) any number of times. After that a . is required(\.) then the domain extension which can be any letters(A-Z) but only between 2 and 4 letters {2,4} */
+/*At the end of the regular expression we are using the JS built in method test() which will test whatever value is passed in to see if it matches the regex pattern. */
+/*Each of these form validation functions will be implemented in the Form below in the Controls tags. */
+
+const required = val => val && val.length;
+const maxLength = len => val => !val || (val.length <= len);
+const minLength = len => val => val && (val.length >= len);
+const isNumber = val => !isNaN(+val);
+const validEmail = val => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(val);
 
 class Contact extends Component {
     constructor(props) {
@@ -108,7 +125,7 @@ class Contact extends Component {
     /*Any time there is a change in those input fields this component will be re-rendered so this validate method will be called at every change. */
     /*Then in the form we need to set an "invalid" attribute for each inout field that we are validating.This invalid attribute will be a boolean attribute. For it's value we will set a condition that checks if there is an errors messages set for this field. An empty string will evaluate as false but if the entered input is not an empty string it will evaluate as true, so then the invalid attribute is set to true. Then below each of the inputs we are validating we'll render the <FormFeedback> component. */
     /*In the <FormFeedback> component we will render the errors message. */
-    /*After we commented out the validate method we no longer need the errors varibale that was calling that method. */
+    /*After we commented out the validate method we no longer need the errors variable that was calling that method. */
     render() {
 
         {/*const errors = this.validate(this.state.firstName, this.state.lastName, this.state.phoneNum, this.state.email)*/}
@@ -150,6 +167,9 @@ class Contact extends Component {
                  {/*We also had to replace the <FormGroup> tags from reactstrap to <Row> tags from react-redux form and give them a class of form-group, */}
                  {/*The input tags where changed to Control tags from react-redux-form, the type html attribute was removed and the type of input is specified by adding for ex. .text after Control. */}
                  {/*In the control tags we add model property which tells redux that the value of lets say the first name input field will be stored in the state under the property name of firstName. The value for the model attribute will always be the same as the value of the name attribute but with a . in front of it. */}
+                 {/*In the Control tags we will implement an attribute called validators. For the value we will use the appropriate functions(or rather the variables that we assigned the functions to) we set up for validating the form above. */}
+                 {/*In the Controls tag for the first name the validators attribute will use several values. for the minLength and maxLenght we are also setting that we want minLength of 2 characters and maxLength of 15. */}
+                 {/*After the Cotrols tag we will implement the Errors tag(component) with the attributes of className="text-danger" for making the text red; the model attribute needs to match the model of the corresponding Controls component. The show="touched" will cause the form to only show error messages if it has been touched by the user. The component="div" tells react-redux-form to wrap each message in a div. The messages attribute will contain the error messages which will be shown for the functions that are inside of it. For ex. if the "required" function comes back false it will show the message that this field is required.*/}
                 <div className="row row-content">
                     <div className="col-12">
                         <h2>Send us your Feedback</h2>
@@ -163,11 +183,27 @@ class Contact extends Component {
                                     <Control.text model=".firstName" id="firstName" name="firstName"
                                         placeholder="First Name"
                                         className="form-control"
+                                        validators = {{
+                                            required,
+                                            minLength: minLength(2),
+                                            maxLength: maxLength(15)
+                                        }}
                                         /*value={this.state.firstName}
                                         invalid={errors.firstName}
                                         onBlur={this.handleBlur("firstName")}
                                         onChange={this.handleInputChange}*/ 
                                      />
+                                     <Errors
+                                         className="text-danger"
+                                         model=".firstName"
+                                         show="touched"
+                                         component="div"
+                                         messages = {{
+                                             required: "Required",
+                                             minLength: "Must be at least 2 characters",
+                                             maxLength: "Must be 15 characters or less"
+                                         }}
+                                      />
                                 </Col>
                             </Row>
                             <Row className="form-group">
@@ -176,11 +212,27 @@ class Contact extends Component {
                                     <Control.text model = ".lastName" id="lastName" name="lastName"
                                         placeholder="Last Name"
                                         className="form-control"
+                                        validators = {{
+                                            required,
+                                            minLength: minLength(2),
+                                            maxLength: maxLength(15)
+                                        }}
                                         /*value={this.state.lastName}
                                         invalid={errors.lastName}
                                         onBlur={this.handleBlur("lastName")}
                                         onChange={this.handleInputChange} */
                                     />
+                                      <Errors
+                                         className="text-danger"
+                                         model=".lastName"
+                                         show="touched"
+                                         component="div"
+                                         messages = {{
+                                             required: "Required",
+                                             minLength: "Must be at least 2 characters",
+                                             maxLength: "Must be 15 characters or less"
+                                         }}
+                                      />
                                 </Col>                        
                             </Row>
                             <Row className="form-group">
@@ -189,11 +241,29 @@ class Contact extends Component {
                                     <Control.text model=".phoneNum" id="phoneNum" name="phoneNum"
                                         placeholder="Phone number"
                                         className="form-control"
+                                        validators= {{
+                                            required,
+                                            minLength: minLength(10),
+                                            maxLength: maxLength(15),
+                                            isNumber
+                                        }}
                                         /*value={this.state.phoneNum}
                                         invalid={errors.phoneNum}
                                         onBlur={this.handleBlur("phoneNum")}
                                         onChange={this.handleInputChange} */
                                     />
+                                      <Errors
+                                         className="text-danger"
+                                         model=".phoneNum"
+                                         show="touched"
+                                         component="div"
+                                         messages = {{
+                                             required: "Required",
+                                             minLength: "Must be at least 10 numbers",
+                                             maxLength: "Must be 15 numbers or less",
+                                             isNumber: "Must be a number"
+                                         }}
+                                      />
                                 </Col>
                             </Row>
                             <Row className="form-group">
@@ -202,11 +272,25 @@ class Contact extends Component {
                                     <Control.text model=".email" id="email" name="email"
                                         placeholder="Email"
                                         className="form-control"
+                                        validators={{
+                                            required,
+                                            validEmail
+                                        }}
                                         /*value={this.state.email}
                                         invalid={errors.email}
                                         onBlur={this.handleBlur("email")}
                                         onChange={this.handleInputChange} */
                                     />
+                                      <Errors
+                                         className="text-danger"
+                                         model=".email"
+                                         show="touched"
+                                         component="div"
+                                         messages = {{
+                                             required: "Required",
+                                             validEmail: "Invalid email address"
+                                         }}
+                                      />
                                 </Col>
                             </Row>
                             <Row className="form-group">
