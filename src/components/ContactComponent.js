@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Breadcrumb, BreadcrumbItem, Button, Label, Col, Row} from 'reactstrap';
 import {Link} from "react-router-dom";
-import { Control, LocalForm, Errors } from 'react-redux-form';
+import { Control, Form, Errors, actions } from 'react-redux-form';
 
 /*Setting up functions to help with the validation of the react-redux form */
 /*the "required" function takes "val"(value) as an argument and checks if a value was received(that input was entered by user). Otherwise "val" will evaluate as false if it was undefined or null. */
@@ -113,9 +113,11 @@ class Contact extends Component {
 
 
     /*For now we are setting up the handleSubmit() method to log the current state to the console. Since console.log expects a string, not an object, we will use a global method that will help make a string from a JS object. It is called JSON.stringify method. We are adding the same thing as an alert as well just in case so we will get this message in the console and as an alret as well. Then again we need to go back up to the constructor of the class component above and bind the "this* keyword to this event as well. After implementing react-redux-form, the word"event" in the parameter list was changed to values and (this.state) after.JSON.stringify was also replaced with values. */
+    /*We are adding the resetFeedbackForm to the handleDubmit method as props to make sure that once the form is submitted the input fields will go back to their initial state and the form will be cleared. */
     handleSubmit(values) {
         console.log("Current state is " + JSON.stringify(values));
         alert("Current state is " + JSON.stringify(values));
+        this.props.resetFeedbackForm();
        {/* event.preventDefault();  */}    {/*When we submit a form usually the whole page refreshes. To prevent that we use event.preventDefault. After implementing react-redux-form we no longer need this line as this will be handled by redux. */}
     }
  
@@ -170,13 +172,15 @@ class Contact extends Component {
                  {/*In the Control tags we will implement an attribute called validators. For the value we will use the appropriate functions(or rather the variables that we assigned the functions to) we set up for validating the form above. */}
                  {/*In the Controls tag for the first name the validators attribute will use several values. for the minLength and maxLenght we are also setting that we want minLength of 2 characters and maxLength of 15. */}
                  {/*After the Cotrols tag we will implement the Errors tag(component) with the attributes of className="text-danger" for making the text red; the model attribute needs to match the model of the corresponding Controls component. The show="touched" will cause the form to only show error messages if it has been touched by the user. The component="div" tells react-redux-form to wrap each message in a div. The messages attribute will contain the error messages which will be shown for the functions that are inside of it. For ex. if the "required" function comes back false it will show the message that this field is required.*/}
+                 {/*In order to be able to connect the form to the state in the redux store we had to change LocalForm to Form and add a model set to feedbackForm. */}
+                
                 <div className="row row-content">
                     <div className="col-12">
                         <h2>Send us your Feedback</h2>
                         <hr />
                     </div>
                     <div className="col-md-10">
-                        <LocalForm onSubmit={values => this.handleSubmit(values)}>
+                        <Form model="feedbackForm" onSubmit={values => this.handleSubmit(values)}>
                             <Row className="form-group">
                                 <Label htmlFor="firstName" md={2}>First Name</Label>
                                 <Col md={10}>
@@ -336,7 +340,7 @@ class Contact extends Component {
                                     </Button>
                                 </Col>
                             </Row>
-                        </LocalForm>
+                        </Form>
                     </div>
                 </div>
             </div>

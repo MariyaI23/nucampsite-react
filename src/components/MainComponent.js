@@ -8,7 +8,11 @@ import Contact from './ContactComponent';
 import About from './AboutComponent.js';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { actions } from 'react-redux-form';
 import { addComment, fetchCampsites } from "../redux/ActionCreators";
+
+
+//Adding the actions import from react-redux-form will make available an action creator named actions.resset. It will be used in the mapDispatchToProps as the value of a function named resetFeedbackForm
 
 /*Since we are moving the state to reducer.js all of the following imports are no longer needed. Also the whole constructor method was removed from the Main component. */
 /*import {CAMPSITES} from '../shared/campsites';
@@ -41,7 +45,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = {
     addComment: (camspiteId, rating, author, text) => (addComment(camspiteId, rating, author, text)),
-    fetchCampsites: () => (fetchCampsites())
+    fetchCampsites: () => (fetchCampsites()),
+    resetFeedbackForm: () => (actions.reset("feedbackForm"))
 };
 
 class Main extends Component {
@@ -92,7 +97,7 @@ class Main extends Component {
                   <Route path = "/home" component = {HomePage} />                  {/*This Route path will direct any path that tries to go to /home to the HomePage we set up in the HomeComponent. */}
                   <Route exact path = '/directory' render = { () => <Directory campsites = {this.props.campsites} />} />                           {/*This Route path will use the "exact" boolean attribute to match the exact path given.That path will be './directory'. Next to that we will set up a render attribute. In it we will have an arrow function returning the Directory component. */}       {/* onClick={campsiteId => this.onCampsiteSelect(campsiteId)}*/}   {/*Here we took the onClick method from DirectoryComponent and entered it here where we are actually rendering the DirectoryComponent so we can pass the onClick method as props to DirectoryComponent. We are not passing the whole campsite object however but just a campsite Id. Note that we had to update that in the onCampsiteSelect method above. After we installed the React-Router library we are no longer using the onClick event or the code in the line bellow. As stated in the comment at the beginning we will no longer be selecting a card to show more info.*/}
                   <Route path = "/directory/:campsiteId" component={CampsiteWithId} />       {/*The : following the /after directory tells the router that waht follows is going to be a parameter. It takes that parameter, whatever that happens to be, and puts it inside the property campsite.id. The Route component itself stores and object named: match in it's state which object has as a property an object named params. The campsite.id will get stored as a property inside that params object.(This can be viewed in the react console). After that we render a component={CamspiteWitdId}. The Route's match object will get passed to the CampsiteWithId component as a prop automatically.*/}
-                  <Route exact path='/contactus' component={Contact} />          {/*Whenever we are not passing any state data to a component we can use the component attribute instead of render like in the above line */}                                                                                                                       {/* <CampsiteInfo campsite = {this.state.campsites.filter(campsite => campsite.id === this.state.selectedCampsite)[0]} /> */}   {/*Here we need to pass an object to the CampsiteInfo component, but since the selectedCampsite property is now storing and id (not and object) after the onCampsiteSelect method has fired, then we need to use the filter array method on the campsites array. That way we can filter through it to find the object that matches the id that was selected. Filter returns an array, however the CampsiteComponent expects to passed an object, that is why we are using [0] at the end. That way we will send 1 object, not an array. */}
+                  <Route exact path='/contactus' render={() => <Contact resetFeedbackForm ={this.props.resetFeedbackForm} />} />          {/*Whenever we are not passing any state data to a component we can use the component attribute instead of render like in the above line. This had to be changed to render as we needed to pass in the resetFeedabckForm as props*/}                                                                                                                       {/* <CampsiteInfo campsite = {this.state.campsites.filter(campsite => campsite.id === this.state.selectedCampsite)[0]} /> */}   {/*Here we need to pass an object to the CampsiteInfo component, but since the selectedCampsite property is now storing and id (not and object) after the onCampsiteSelect method has fired, then we need to use the filter array method on the campsites array. That way we can filter through it to find the object that matches the id that was selected. Filter returns an array, however the CampsiteComponent expects to passed an object, that is why we are using [0] at the end. That way we will send 1 object, not an array. */}
                   <Route exact path ="/aboutus" render = { () => <About partners = {this.props.partners} />} />
                   <Redirect to = "/home" />                                                                                                        {/*This Redirect React-Router component plays the role of a "catch-all" similar to the default statement in the JS switch statement. */}
 
