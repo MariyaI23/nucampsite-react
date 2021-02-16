@@ -1,4 +1,6 @@
-import { createStore, combineReducers } from 'redux';
+import { createStore, combineReducers, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
+import logger from 'redux-logger';
 import { Campsites } from "./campsites";
 import { Comments} from "./comments";
 import { Partners } from "./partners";
@@ -11,6 +13,7 @@ import { Promotions } from "./promotions";
 //We are also importing all of the reducers we created.
 //We will be passing an object that contains all of the reducers as properties. The property names define how the data from each reducer will be kept in the overall state object tree.
 //At this point the reducer.js file in the redux folder can also be deleted(I have just commented out everything in it).
+//Adding middleware(thunk and logger). For logger adding it as an argument is all that is needed for it's use.
 
 export const ConfigureStore = () => {
     const store = createStore(
@@ -19,7 +22,8 @@ export const ConfigureStore = () => {
            comments: Comments,
            partners: Partners,
            promotions: Promotions
-       })
+       }),
+       applyMiddleware(thunk, logger)
         
     );
 

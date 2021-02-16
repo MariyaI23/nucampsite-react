@@ -8,7 +8,7 @@ import Contact from './ContactComponent';
 import About from './AboutComponent.js';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { addComment } from "../redux/ActionCreators";
+import { addComment, fetchCampsites } from "../redux/ActionCreators";
 
 /*Since we are moving the state to reducer.js all of the following imports are no longer needed. Also the whole constructor method was removed from the Main component. */
 /*import {CAMPSITES} from '../shared/campsites';
@@ -34,12 +34,21 @@ const mapStateToProps = state => {
 //In the arrow function's body we will call the action's creator- addCommentpassing in that data.
 //Then we are adding this mapDispatchtoProps at the bottom of this file to the connect function as the second argument. This will make the addComment  action creator function available inside the Main component as prop.
 //Then we can pass the addComment creator function as a prop to the CampsiteInfo component which rendered below. The the CampsiteInfo component itself has to be updated to use that addComment creator function.
+//After introducing redux thunk we will add the fetchCampsites arrow function to the mapDispatchToProps.We will have it call the fetchCampsites action creator.That way this creator is available to the Main component as props.
+//We want to fetch the campsites data as soon as the Main component is rendered to the DOM. That is why we are adding the method componentDidMount() right before the render method of the Main component below
+//componentDidMount is a built in react method parth of the Lifecycle Methods.The render() method is also a Lifecycle method as it is part of the "life of the component-the part were it renders other components."
+
 
 const mapDispatchToProps = {
-    addComment: (camspiteId, rating, author, text) => (addComment(camspiteId, rating, author, text))
+    addComment: (camspiteId, rating, author, text) => (addComment(camspiteId, rating, author, text)),
+    fetchCampsites: () => (fetchCampsites())
 };
 
 class Main extends Component {
+
+    componentDidMount() {
+        this.props.fetchCampsites();
+    }
    
 
     /*  onCampsiteSelect(campsiteId) {
@@ -51,8 +60,12 @@ class Main extends Component {
       const HomePage = () => {
           return (
               /*We will be filtering each array of objects(the campsites array, the promotions and partners arrays. Each object in those arrays has a featured property.Some are set to true. The filter method will check for that and if true, it will return a new array. To pull just that object out of the array we are using the array index: [0]). Allof these will be passed to the Homa page component as props*/
+              /*we added campsites 2 times before the filter method because prior to adding redux thunk campsites was holding just the array of campsites, but now it holds also the isLoaded and errMess properties besides the array. If we still need to access the array we need to specify now that from  the campsites object we want the campsites array. */
+              /*We will also pass the isLoading and errMess properties as props.This and the above step from the comments was repeated for the CampsiteWithId component below as well */
               <Home 
-                  campsite = {this.props.campsites.filter(campsite => campsite.featured)[0]}    
+                  campsite = {this.props.campsites.campsites.filter(campsite => campsite.featured)[0]}    
+                  campsitesLoading={this.props.campsites.isLoading}
+                  campsitesErrMess={this.props.campsites.errMess}
                   promotion = {this.props.promotions.filter(promotion => promotion.featured)[0]}
                   partner = {this.props.partners.filter(partner => partner.featured)[0]}
               />
@@ -62,7 +75,10 @@ class Main extends Component {
       /*We'll set the CampsiteWithId component bellow as an arrow function as we'll need to access the Main Component's state. The function will receive props from the Route component bellow and we are destructuring the props to use the match object as a parameter in the arow function. As a return from the arrow function we'll render the CampsiteInfo component and will pass some props: one is the selected campsite object, the other is an array with all the comments for that campsite. For the first one, we know we have the whole Campsites list in the main component so here we'll have to filter through that to get the campsite object that has an id that matches what is stored in match.params.campsiteId. Because that value is stored as a string we need to convert it to a number in order to do the comparison. For that conversion we'll use the unary + operator which does exactly that-when we have a number that is stored as a string but we want to convert it back to a number we just place the + operator in front of that string or in front of whatever holds the string as a value.For ex. if we have the string "100" we just do +"100" and now 100 is a number.At the end the filter method returns an array but we need an obect so again we place [0] at the end to get that object. For the comments we are doing pretty much the same but here we need the whole array, not just a single comment so we will omit the [0] at the end. Then we need to go and fix the CampsiteInfoComponent.*/
       const CampsiteWithId = ({match}) => {
           return (
-              <CampsiteInfo campsite = {this.props.campsites.filter(campsite => campsite.id === +match.params.campsiteId)[0]}
+              <CampsiteInfo 
+                  campsite = {this.props.campsites.campsites.filter(campsite => campsite.id === +match.params.campsiteId)[0]}
+                  isLoading={this.props.campsites.isLoading}
+                  errMess={this.props.campsites.errMess}
                   comments = {this.props.comments.filter(comment => comment.campsiteId === +match.params.campsiteId)} 
                   addComment = {this.props.addComment}
               />
