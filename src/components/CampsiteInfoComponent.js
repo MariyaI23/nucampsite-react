@@ -46,10 +46,13 @@ class CommentForm extends Component {
             isModalOpen: !this.state.isModalOpen
         });
     }
+
+   //The this.props.addComment action creator was added to the handleSubmit method as props so when a new comment is submitted the addComent will create an action using the values from this form. Then that action will be dispatched to it's reducer which will update the state. 
+
     handleSubmit(values) {
-        console.log("Current state is " + JSON.stringify(values));
-        alert("Current state is " + JSON.stringify(values));
+    
         this.toggleModal();  
+        this.props.addComment(this.props.campsiteId, values.rating, values.author, values.text);
     }
 
     render() {
@@ -117,7 +120,7 @@ class CommentForm extends Component {
 
 
 
-function RenderComments({comments}) {
+function RenderComments({comments, addComment, campsiteId}) {
     if(comments) {
         return (
             <div className="col-md-5 m-1">
@@ -127,7 +130,7 @@ function RenderComments({comments}) {
                 <br/> {comment.author},{new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit'}).format(new Date(Date.parse(comment.date)))}</p>
                 </div>
                 )}
-                <CommentForm />
+                <CommentForm  campsiteId={campsiteId} addComment={addComment} />
             </div>
         );
     }
@@ -135,7 +138,7 @@ function RenderComments({comments}) {
 }
 
 /*Next we will turn the render method of the class component into a CampsiteInfo functional component */
-
+//In the RenderComments component below we are adding the action creator function-addComment as a prop along with the campsite's id. Then  we will go up to the RenderComments function and we will add the addComment and campsiteId to the parameter list(which is destructured). We will pass these also to the CommentForm at the end of the RenderComments' function. Then we need to pass this props in the CommentForm function to the handleSubmit method.
 function CampsiteInfo(props) {
     if(props.campsite) {
         return (
@@ -154,7 +157,11 @@ function CampsiteInfo(props) {
             </div>
             <div className = "row">
                 <RenderCampsite campsite = {props.campsite} />
-                <RenderComments comments = {props.comments} />
+                <RenderComments 
+                    comments = {props.comments}
+                    addComment = {props.addComment}
+                    campsiteId = {props.campsite.id}
+                 />
             </div>
         </div>
         );

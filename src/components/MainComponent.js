@@ -6,9 +6,9 @@ import Footer from "./FooterComponent";
 import Home from "./HomeComponent";
 import Contact from './ContactComponent';
 import About from './AboutComponent.js';
-
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { addComment } from "../redux/ActionCreators";
 
 /*Since we are moving the state to reducer.js all of the following imports are no longer needed. Also the whole constructor method was removed from the Main component. */
 /*import {CAMPSITES} from '../shared/campsites';
@@ -19,13 +19,24 @@ import { PROMOTIONS } from '../shared/promotions';*/
 
 /*To get the state for redux we are setting up the mapStatetoProps function.It will take the state as an argument and it will return the campsites,comments,partners and promotions' arrays as props. Therefore all the occurences of word "state" in the Main component were changed to props as Main is no longer setting the state but recieving it as props.*/
 
-const mapStatetoProps = state => {
+const mapStateToProps = state => {
     return {
     campsites: state.campsites,
     comments: state.comments,
     partners: state.partners,
     promotions: state.promotions
     };
+};
+
+
+//The mapDispatchtoProps below can be set up either as a function or as an object. The recommended way is to set it up as an object.
+//We are setting up a property addComment and for it's value we will set up an arrow function with a parameter list containing the items show.
+//In the arrow function's body we will call the action's creator- addCommentpassing in that data.
+//Then we are adding this mapDispatchtoProps at the bottom of this file to the connect function as the second argument. This will make the addComment  action creator function available inside the Main component as prop.
+//Then we can pass the addComment creator function as a prop to the CampsiteInfo component which rendered below. The the CampsiteInfo component itself has to be updated to use that addComment creator function.
+
+const mapDispatchToProps = {
+    addComment: (camspiteId, rating, author, text) => (addComment(camspiteId, rating, author, text))
 };
 
 class Main extends Component {
@@ -52,7 +63,9 @@ class Main extends Component {
       const CampsiteWithId = ({match}) => {
           return (
               <CampsiteInfo campsite = {this.props.campsites.filter(campsite => campsite.id === +match.params.campsiteId)[0]}
-              comments = {this.props.comments.filter(comment => comment.campsiteId === +match.params.campsiteId)} />
+                  comments = {this.props.comments.filter(comment => comment.campsiteId === +match.params.campsiteId)} 
+                  addComment = {this.props.addComment}
+              />
           );
       };
 
@@ -76,4 +89,4 @@ class Main extends Component {
 
 /*We are setting up the connect method to allow Main to take it's state from the redux store. Then we are wrapping the export with the "withRouter" we imported above so our Router will still work with changes made to this export.*/
 
-export default withRouter(connect(mapStatetoProps)(Main));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Main));
