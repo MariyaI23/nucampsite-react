@@ -9,7 +9,7 @@ import { baseUrl} from '../shared/baseUrl';
 //Next we are adding an action creator-fetchCampsites and we are using the redux thunk syntax. We are wrapping the function in another function and redux thunk lets us pass the store's dispatch method into the inner function.
 //Then we can use the dispatch method inside the inner function to dispatch different action - campsitesLoading.
 //Then we are using setTimeout to simulate brief delay of 2000ms.(That was replaced by return fetch(baseUrl +"campsites"). As this is the location of the resource we want-the campsites data.). //
-//The fetch method will return a promise. We are chaining .then method which will use the json() method to convert the response(once resolved) to JS.That JS will be the array of campsites.Then we can chain another .then method wich will grab that array in the campsites argument.
+//The fetch method will return a promise. We are chaining .then method which will check with an if/else statement if the response we got from the server is in the ok range or not.If it is we will return the response and will continue to the next .then method. It will use the json() method to convert the response(once resolved) to JS.That JS will be the array of campsites.Then we can chain another .then method wich will grab that array in the campsites argument. If the response we got from the server is not in the ok range, we'll throw an error. The error => function after the if/else statement is if we didn't get a response from the server at all(good or bad).
 //Then we can dispatch that data to the addCampsites action creator to be used as it's payload.
 //After that delay, we are dispatching another action-addCampsites along with the data from the campsites array.
 //The next action creator we are adding-campsitesLoading is a standard action creator, it is not using redux thunk. It will return just an object. We are not adding a payload, just a type. Since this action creator is not thunked it will not be delayed and it will go straight to the reducer.
@@ -22,7 +22,7 @@ import { baseUrl} from '../shared/baseUrl';
 //Next we will set up 2 more action creators which will be regular action creators and will not be using thunk, therefore-just 1 arrow function.
 //The commentsFailed action creator will have a parameter of errMess and will create an object with type of ActionTypes.COMMENTS_FAILED. And a payload containing that error message
 //The addComments action creator will have a parameter of comments; a type of ActionTypes.ADD_COMMENTS and a payload of comments passed in as the argument
-//The next action creator will be for fetching propmotions and this pne will be thunk
+//The next action creator will be for fetching promotions and this pne will be thunk
 
 export const addComment = (campsiteId, rating, author, text) => ({
     type: ActionTypes.ADD_COMMENT,
@@ -38,8 +38,23 @@ export const fetchCampsites = () => dispatch => {
     dispatch(campsitesLoading());
 
     return fetch(baseUrl + "campsites")
+        .then(response => {
+            if (response.ok) {
+                return response;
+            } else {
+                const error = new Error(`Error ${response.status}: ${response.statusText}`);
+                error.response = response;
+                throw error;
+            }
+        },
+        error => {
+            const errMess = new Error(error.message);
+            throw errMess;
+        }
+        )
         .then(response => response.json())
-        .then(campsites => dispatch(addCampsites(campsites)));
+        .then(campsites => dispatch(addCampsites(campsites)))
+        .catch(error => dispatch(campsitesFailed(error.message)));
 
     /*setTimeout(() => {
         dispatch(addCampsites(CAMPSITES));
@@ -62,8 +77,23 @@ export const addCampsites = campsites => ({
 
 export const fetchComments = () => dispatch => {
     return fetch(baseUrl + "comments")
+    .then(response => {
+        if (response.ok) {
+            return response;
+        } else {
+            const error = new Error(`Error ${response.status}: ${response.statusText}`);
+            error.response = response;
+            throw error;
+        }
+    },
+    error => {
+        const errMess = new Error(error.message);
+        throw errMess;
+    }
+    )
         .then(response => response.json())
-        .then(comments => dispatch(addComments(comments)));
+        .then(comments => dispatch(addComments(comments)))
+        .catch(error => dispatch(commentsFailed(error.message)));
 };
 
 export const commentsFailed = errMess => ({
@@ -81,8 +111,23 @@ export const fetchPromotions = () => dispatch => {
     dispatch(promotionsLoading());
 
     return fetch(baseUrl + "promotions")
+    .then(response => {
+        if (response.ok) {
+            return response;
+        } else {
+            const error = new Error(`Error ${response.status}: ${response.statusText}`);
+            error.response = response;
+            throw error;
+        }
+    },
+    error => {
+        const errMess = new Error(error.message);
+        throw errMess;
+    }
+    )
         .then(response => response.json())
-        .then(promotions => dispatch(addPromotions(promotions)));
+        .then(promotions => dispatch(addPromotions(promotions)))
+        .catch(error => dispatch(promotionsFailed(error.message)));
 };
 
 export const promotionsLoading = () => ({
