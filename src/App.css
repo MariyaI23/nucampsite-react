@@ -44,3 +44,25 @@ h2 {
 .navbar-dark {
   background-color: #901CAD;
 }
+
+/*Adding css for transition-the following 4 classes will help to implement a fade effect. The first 2 describe the transition that will happen when a component is mounted.
+It will start with opacity of 0 and the over 300ms will transition to opacity of 1. Ease-out means that it will start out fast but then it will decelerate.
+The transform: translateX(-100%) means the components will start moving on the page from the left to the right until they reach a  normal position with translateX(0%).
+The next 2 classes will describe the transition that happens when a component is being unmounted. It will start with opacity of 1 and it will transition to opacity of 0 over 300ms. Ease-in means it will start slow and then accelerate.*/
+
+.page-enter {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+.page-enter-active {
+  opacity: 1;
+  transform: translateX(0%);
+  transition: 300ms ease-out;
+}
+.page-exit {
+  opacity: 1;
+}
+.page-exit-active {
+  opacity: 0;
+  transition: 300ms ease-in;
+}
