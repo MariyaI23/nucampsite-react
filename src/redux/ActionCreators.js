@@ -24,15 +24,6 @@ import { baseUrl} from '../shared/baseUrl';
 //The addComments action creator will have a parameter of comments; a type of ActionTypes.ADD_COMMENTS and a payload of comments passed in as the argument
 //The next action creator will be for fetching promotions and this pne will be thunk
 
-export const addComment = (campsiteId, rating, author, text) => ({
-    type: ActionTypes.ADD_COMMENT,
-    payload: {
-        campsiteId: campsiteId,
-        rating: rating,
-        author: author,
-        text: text
-    }
-});
 
 export const fetchCampsites = () => dispatch => {
     dispatch(campsitesLoading());
@@ -105,6 +96,50 @@ export const addComments = comments => ({
     type: ActionTypes.ADD_COMMENTS,
     payload: comments
 });
+
+//We are adding the below logic to set up a way to post the newly added comment to the server. We must specify a method. If we don't the deafult method is "GET".In this case we specifying "POST"
+//After method:"POST", we need to add new property body: that will hold the new object we created-newComment.JSON.stringify helps us turn that object into a string. That is the http request body
+//Next we will add the request header with the headers property. That property needs to be an objext so it can hold one or more headers. We are giving just one header this time. With application/json the server will know to expect that the body will be formated as json.
+//After error=> we will close the first .then method and chain few more .then methods. The first will deal if the response from the server is that our new comment was accepted and it was returned back to us. Then we will dispatch it with the addComment action creator so the redux store can also be updated.Then will add a catch method to catch any rejected promises or throws and let us know that something went wrong.
+export const addComment = comment => ({
+    type: ActionTypes.ADD_COMMENT,
+    payload: comment
+});
+
+export const postComment = (campsiteId, rating, author, text) => dispatch => {
+    const newComment = {
+        campsiteId: campsiteId,
+        rating: rating,
+        author: author,
+        text: text
+    };
+    newComment.date = new Date().toISOString();
+
+    return fetch(baseUrl + "comments", {
+        method: "POST",
+        body: JSON.stringify(newComment),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            return response;
+        } else {
+            const error = new Error(`Error ${response.status}: ${response.statusText}`);
+            error.response = response;
+            throw error;
+        }
+    },
+    error => {throw error; }
+    )
+    .then(response => response.json())
+    .then(response => dispatch(addComment(response)))
+    .catch(error => {
+        console.log("post comment", error.message);
+        alert("Your comment could not be posted\nError: " + error.message);
+    });
+};
 
 export const fetchPromotions = () => dispatch => {
 

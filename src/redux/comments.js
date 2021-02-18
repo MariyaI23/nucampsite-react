@@ -7,6 +7,8 @@ import * as ActionTypes from "./ActionTypes";
 //The action type COMMENTS_FAILED will return the previous state allong with the errMess form the action payload
 //At the ADD_COMMENT action the comment.id will no longer be =state.length, because the state is no longer just a simple array. Now the array is tored in the state.comments object, so we need to insert comments between state and length
 //Also we can't just concat the new comment to the end anymore. We will need to spread the previous state and update just the comments property and that is where we will concat the new comment
+//We had to comment out the comment.id as it was nppt needed anymore as json-server adds an id automatically. The date is being in the postComment action creator now.
+
 
 export const Comments = (state = { errMess: null, comments: []}, action) => {
     switch (action.type) {
@@ -16,8 +18,8 @@ export const Comments = (state = { errMess: null, comments: []}, action) => {
             return {...state, errmess: action.payload};
         case ActionTypes.ADD_COMMENT:
             const comment = action.payload;
-            comment.id = state.comments.length;
-            comment.date = new Date().toISOString();
+            //comment.id = state.comments.length;
+            //comment.date = new Date().toISOString();
             return {...state, comments: state.comments.concat(comment)};
         default:
             return state;

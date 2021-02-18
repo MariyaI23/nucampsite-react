@@ -9,10 +9,11 @@ import About from './AboutComponent.js';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { actions } from 'react-redux-form';
-import { addComment, fetchCampsites, fetchComments, fetchPromotions } from "../redux/ActionCreators";
+import { postComment, fetchCampsites, fetchComments, fetchPromotions } from "../redux/ActionCreators";
 
 
 //Adding the actions import from react-redux-form will make available an action creator named actions.resset. It will be used in the mapDispatchToProps as the value of a function named resetFeedbackForm
+//After creating the postComment action creator we need to replace here every instance of addComment to postComment
 
 /*Since we are moving the state to reducer.js all of the following imports are no longer needed. Also the whole constructor method was removed from the Main component. */
 /*import {CAMPSITES} from '../shared/campsites';
@@ -44,7 +45,7 @@ const mapStateToProps = state => {
 //After installing json-server we added the new methods to call the new action creators(fetchCooments and fetchPromotions) to mapDispatchToProps
 
 const mapDispatchToProps = {
-    addComment: (camspiteId, rating, author, text) => (addComment(camspiteId, rating, author, text)),
+    postComment: (camspiteId, rating, author, text) => (postComment(camspiteId, rating, author, text)),
     fetchCampsites: () => (fetchCampsites()),
     resetFeedbackForm: () => (actions.reset("feedbackForm")),
     fetchComments: () => (fetchComments()),
@@ -92,7 +93,7 @@ class Main extends Component {
                   errMess={this.props.campsites.errMess}
                   comments = {this.props.comments.comments.filter(comment => comment.campsiteId === +match.params.campsiteId)} 
                   commentsErrMess={this.props.comments.errMess}
-                  addComment = {this.props.addComment}
+                  postComment = {this.props.postComment}
               />
           );
       };

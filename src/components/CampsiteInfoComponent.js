@@ -24,9 +24,7 @@ function RenderCampsite({campsite}) {
     )
 }
 
-/*START TASK 1  then go to RenderComments component below where I have rendered this CommentForm component.That finishes TASK 1 I also had to import {Component at the top and Button from reactstrap}*/
-/*TASK 2 creates the MODAL and it's fields in the CommentForm component. Adds the constructor and everything in it and creates the toggleModal and handleSubmit functions*/
-/*TASK 3-validation for min and max length of the author field */
+
 class CommentForm extends Component {
     constructor(props) {
         super(props);
@@ -49,12 +47,12 @@ class CommentForm extends Component {
         });
     }
 
-   //The this.props.addComment action creator was added to the handleSubmit method as props so when a new comment is submitted the addComent will create an action using the values from this form. Then that action will be dispatched to it's reducer which will update the state. 
+   //The this.props.addComment(replaced later with postComment) action creator was added to the handleSubmit method as props so when a new comment is submitted the addComent will create an action using the values from this form. Then that action will be dispatched to it's reducer which will update the state. 
 
     handleSubmit(values) {
     
         this.toggleModal();  
-        this.props.addComment(this.props.campsiteId, values.rating, values.author, values.text);
+        this.props.postComment(this.props.campsiteId, values.rating, values.author, values.text);
     }
 
     render() {
@@ -120,9 +118,9 @@ class CommentForm extends Component {
     }
 }
 
+//After creating the postComment action creator we had to replace every instance of addComment with postComment
 
-
-function RenderComments({comments, addComment, campsiteId}) {
+function RenderComments({comments, postComment, campsiteId}) {
     if(comments) {
         return (
             <div className="col-md-5 m-1">
@@ -132,7 +130,7 @@ function RenderComments({comments, addComment, campsiteId}) {
                 <br/> {comment.author},{new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit'}).format(new Date(Date.parse(comment.date)))}</p>
                 </div>
                 )}
-                <CommentForm  campsiteId={campsiteId} addComment={addComment} />
+                <CommentForm  campsiteId={campsiteId} postComment={postComment} />
             </div>
         );
     }
@@ -183,7 +181,7 @@ function CampsiteInfo(props) {
                 <RenderCampsite campsite = {props.campsite} />
                 <RenderComments 
                     comments = {props.comments}
-                    addComment = {props.addComment}
+                    postComment = {props.postComment}
                     campsiteId = {props.campsite.id}
                  />
             </div>
