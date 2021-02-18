@@ -2,14 +2,17 @@ import React from "react";
 import { Card, CardImg, CardImgOverlay, CardTitle, Breadcrumb, BreadcrumbItem } from 'reactstrap';
 import {Link} from "react-router-dom";
 import { Loading } from "./LoadingComponent";
+import { baseUrl} from "../shared/baseUrl";
 
 /*Since the DirectoryComponent is a presentational component we can use functional components here.In the below featured component's parameter list instead of passing the whole props object we are descructuring it and pass the campsite and the onClick properties. After installing the React-router, we removed the onClick as it is no longer handled here.  */
 /*We are creating a Link here that is set to follow the path to the directory and we are adding ${campsite.id} as a template literal because we want to show the card with the particular campsite id that the user clicks on. We are just setting up the link here. Separately the router needs to be set up with the router parameters in the Main component (nested in the Switch component where all the other Routes are) so the link would actually work.*/
+/*After installing json-server, we imported the baseUrl which holds the server's address and since now we will be getting the images from the server we need to update the src attribute of the CargImg tag. */
+
 function RenderDirectoryItem({campsite}) {
      return (
         <Card>   
             <Link to={`/directory/${campsite.id}`}>  
-                <CardImg width ="100%"src = {campsite.image} alt = {campsite.name} />       
+                <CardImg width ="100%" src = {baseUrl + campsite.image} alt = {campsite.name} />       
                 <CardImgOverlay>
                      <CardTitle>{campsite.name}</CardTitle>
                 </CardImgOverlay>

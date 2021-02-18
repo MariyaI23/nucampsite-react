@@ -9,7 +9,7 @@ import About from './AboutComponent.js';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { actions } from 'react-redux-form';
-import { addComment, fetchCampsites } from "../redux/ActionCreators";
+import { addComment, fetchCampsites, fetchComments, fetchPromotions } from "../redux/ActionCreators";
 
 
 //Adding the actions import from react-redux-form will make available an action creator named actions.resset. It will be used in the mapDispatchToProps as the value of a function named resetFeedbackForm
@@ -40,19 +40,23 @@ const mapStateToProps = state => {
 //Then we can pass the addComment creator function as a prop to the CampsiteInfo component which rendered below. The the CampsiteInfo component itself has to be updated to use that addComment creator function.
 //After introducing redux thunk we will add the fetchCampsites arrow function to the mapDispatchToProps.We will have it call the fetchCampsites action creator.That way this creator is available to the Main component as props.
 //We want to fetch the campsites data as soon as the Main component is rendered to the DOM. That is why we are adding the method componentDidMount() right before the render method of the Main component below
-//componentDidMount is a built in react method parth of the Lifecycle Methods.The render() method is also a Lifecycle method as it is part of the "life of the component-the part were it renders other components."
-
+//componentDidMount is a built in react method parth of the Lifecycle Methods.The render() method is also a Lifecycle method as it is part of the "life of the component-the part were it renders other components." We added the fetchComments and fetchPromotions action creators as well so they can be fetched once the component has mounted
+//After installing json-server we added the new methods to call the new action creators(fetchCooments and fetchPromotions) to mapDispatchToProps
 
 const mapDispatchToProps = {
     addComment: (camspiteId, rating, author, text) => (addComment(camspiteId, rating, author, text)),
     fetchCampsites: () => (fetchCampsites()),
-    resetFeedbackForm: () => (actions.reset("feedbackForm"))
+    resetFeedbackForm: () => (actions.reset("feedbackForm")),
+    fetchComments: () => (fetchComments()),
+    fetchPromotions: () => (fetchPromotions())
 };
 
 class Main extends Component {
 
     componentDidMount() {
         this.props.fetchCampsites();
+        this.props.fetchComments();
+        this.props.fetchPromotions();
     }
    
 
@@ -65,13 +69,15 @@ class Main extends Component {
       const HomePage = () => {
           return (
               /*We will be filtering each array of objects(the campsites array, the promotions and partners arrays. Each object in those arrays has a featured property.Some are set to true. The filter method will check for that and if true, it will return a new array. To pull just that object out of the array we are using the array index: [0]). Allof these will be passed to the Homa page component as props*/
-              /*we added campsites 2 times before the filter method because prior to adding redux thunk campsites was holding just the array of campsites, but now it holds also the isLoaded and errMess properties besides the array. If we still need to access the array we need to specify now that from  the campsites object we want the campsites array. */
+              /*we added campsites 2 times before the filter method because prior to adding redux thunk campsites was holding just the array of campsites, but now it holds also the isLoaded and errMess properties besides the array. If we still need to access the array we need to specify now that from  the campsites object we want the campsites array. Same thing with promotions.*/
               /*We will also pass the isLoading and errMess properties as props.This and the above step from the comments was repeated for the CampsiteWithId component below as well */
               <Home 
                   campsite = {this.props.campsites.campsites.filter(campsite => campsite.featured)[0]}    
                   campsitesLoading={this.props.campsites.isLoading}
                   campsitesErrMess={this.props.campsites.errMess}
-                  promotion = {this.props.promotions.filter(promotion => promotion.featured)[0]}
+                  promotion = {this.props.promotions.promotions.filter(promotion => promotion.featured)[0]}
+                  promotionLoading={this.props.promotions.isLoading}
+                  promotionErrMess={this.props.promotions.errMess}
                   partner = {this.props.partners.filter(partner => partner.featured)[0]}
               />
           );
@@ -84,7 +90,8 @@ class Main extends Component {
                   campsite = {this.props.campsites.campsites.filter(campsite => campsite.id === +match.params.campsiteId)[0]}
                   isLoading={this.props.campsites.isLoading}
                   errMess={this.props.campsites.errMess}
-                  comments = {this.props.comments.filter(comment => comment.campsiteId === +match.params.campsiteId)} 
+                  comments = {this.props.comments.comments.filter(comment => comment.campsiteId === +match.params.campsiteId)} 
+                  commentsErrMess={this.props.comments.errMess}
                   addComment = {this.props.addComment}
               />
           );
