@@ -3,7 +3,7 @@ import { baseUrl} from '../shared/baseUrl';
 
 //The * lets us import all the named exports from the ActionTypes.js file all at once
 //Next we are creating an action cretor function addComment. We need to apss in all the values that are needed for the comment.
-//We will set this action creatotr function as an arrow functions which returns an object with the properties: type and payload. Type will be set to ActionTypes(which included all actions) we imported above and then we specify which action exactly by .ADD_COMMENT
+//We will set this action creator function as an arrow functions which returns an object with the properties: type and payload. Type will be set to ActionTypes(which included all actions) we imported above and then we specify which action exactly by .ADD_COMMENT
 //Next we will be using redux thunk to perform async request to the server but since we are not pulling any data from any server for this app, we will be simulating a delay by adding setTimeOut function. After that delay we'll add the campsites data to the state.
 //We are importing the campsites data temporarely so we can include it in our server simulation.(This was replaced by the baseUrl import after setting up json-server.)
 //Next we are adding an action creator-fetchCampsites and we are using the redux thunk syntax. We are wrapping the function in another function and redux thunk lets us pass the store's dispatch method into the inner function.
@@ -179,3 +179,83 @@ export const addPromotions = promotions => ({
     payload: promotions
 });
 
+
+export const fetchPartners = () => dispatch => {
+
+    dispatch(partnersLoading());
+
+    return fetch(baseUrl + "partners")
+    .then(response => {
+        if (response.ok) {
+            return response;
+        } else {
+            const error = new Error(`Error ${response.status}: ${response.statusText}`);
+            error.response = response;
+            throw error;
+        }
+    },
+    error => {
+        const errMess = new Error(error.message);
+        throw errMess;
+    }
+    )
+        .then(response => response.json())
+        .then(partners => dispatch(addPartners(partners)))
+        .catch(error => dispatch(partnersFailed(error.message)));
+};
+
+export const partnersLoading = () => ({
+    type: ActionTypes.PARTNERS_LOADING
+});
+
+export const partnersFailed = (errMess) => ({
+    type: ActionTypes.PROMOTIONS_FAILED,
+    payload: errMess
+});
+
+export const addPartners = (partners) => ({
+    type: ActionTypes.ADD_PARTNERS,
+    payload: partners
+});
+
+
+export const postFeedback = (feedback) => () => {
+    const newFeedback = {
+        firstName: feedback.firstName,
+        lastName: feedback.lastName,
+        phone: feedback.phone,
+        email: feedback.email,
+        agree: feedback.agree,
+        contactType: feedback.contactType,
+        feedback: feedback.feedback
+    };
+    
+
+    return fetch(baseUrl + "feedback", {
+        method: "POST",
+        body: JSON.stringify(newFeedback),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            return response;
+        } else {
+            const error = new Error(`Error ${response.status}: ${response.statusText}`);
+            error.response = response;
+            throw error;
+        }
+    },
+    error => {throw error; }
+    )
+    .then(response => response.json())
+    .then((response) => {
+        alert(`Thank you for your feedback` + JSON.stringify(response))})
+    
+   
+    .catch(error => {
+        console.log("post feedback", error.message);
+        alert("Your comment could not be posted\nError: " + error.message);
+    });
+};

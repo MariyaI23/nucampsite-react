@@ -3,6 +3,7 @@ import { Card, CardImg, CardImgOverlay, CardTitle, Breadcrumb, BreadcrumbItem } 
 import {Link} from "react-router-dom";
 import { Loading } from "./LoadingComponent";
 import { baseUrl} from "../shared/baseUrl";
+import { FadeTransform } from "react-animation-components";
 
 /*Since the DirectoryComponent is a presentational component we can use functional components here.In the below featured component's parameter list instead of passing the whole props object we are descructuring it and pass the campsite and the onClick properties. After installing the React-router, we removed the onClick as it is no longer handled here.  */
 /*We are creating a Link here that is set to follow the path to the directory and we are adding ${campsite.id} as a template literal because we want to show the card with the particular campsite id that the user clicks on. We are just setting up the link here. Separately the router needs to be set up with the router parameters in the Main component (nested in the Switch component where all the other Routes are) so the link would actually work.*/
@@ -10,14 +11,20 @@ import { baseUrl} from "../shared/baseUrl";
 
 function RenderDirectoryItem({campsite}) {
      return (
-        <Card>   
-            <Link to={`/directory/${campsite.id}`}>  
-                <CardImg width ="100%" src = {baseUrl + campsite.image} alt = {campsite.name} />       
-                <CardImgOverlay>
-                     <CardTitle>{campsite.name}</CardTitle>
-                </CardImgOverlay>
-            </Link>
-        </Card>
+        <FadeTransform
+            in
+            transformProps={{
+            exitTransform: "scale(0.5) translateY(50%)"
+         }}>
+                <Card>   
+                    <Link to={`/directory/${campsite.id}`}>  
+                        <CardImg width ="100%" src = {baseUrl + campsite.image} alt = {campsite.name} />       
+                        <CardImgOverlay>
+                            <CardTitle>{campsite.name}</CardTitle>
+                        </CardImgOverlay>
+                    </Link>
+                </Card>
+        </FadeTransform>
      );
 
 }
@@ -116,9 +123,9 @@ export default Directory;
      /*  render() {
         const directory = this.props.campsites.map(campsite => {
             return (
-                <div key = {campsite.id} className = "col-md-5 m-1">     */      {/*Here we are using key so we can identify each item in the array of objects by it's unic id. The app will work fine without it but it gives warning in the console and we add it to follow best practices*/}
-                    /*  <Card onClick={() => this.props.onClick(campsite.id)}>  */   {/*Here we are passing the onClick method as props from MainComponent.js */}
-                     /*   <CardImg src = {campsite.image} alt = {campsite.name} />     */   {/*We are using curly braces here since we are inside JSX. We are using the map method on every item(campsite) in the campsites array of objects and we want the arrow function to return the stated properties of each one of the items. Map returns a new array. It will be rendered bellow where we added the directory variable inside the div with className="row".*/}
+                <div key = {campsite.id} className = "col-md-5 m-1">     */      /*Here we are using key so we can identify each item in the array of objects by it's unic id. The app will work fine without it but it gives warning in the console and we add it to follow best practices*/
+                    /*  <Card onClick={() => this.props.onClick(campsite.id)}>  */   /*Here we are passing the onClick method as props from MainComponent.js */
+                     /*   <CardImg src = {campsite.image} alt = {campsite.name} />     */   /*We are using curly braces here since we are inside JSX. We are using the map method on every item(campsite) in the campsites array of objects and we want the arrow function to return the stated properties of each one of the items. Map returns a new array. It will be rendered bellow where we added the directory variable inside the div with className="row".*/
                      /*   <CardImgOverlay>
                             <CardTitle>{campsite.name}</CardTitle>
                         </CardImgOverlay>
@@ -127,10 +134,11 @@ export default Directory;
             );
         });  */
 /*The bellow return is the return from the whole component. When we are ready to break out of this component and send some data back to the parent component-that is going to happend exactly in this final return statment. All the other returns above were inside the methods which are contained inside the DirectoryComponent. These methods are just being used to pass date inside the component. */
+/*Adding a JS variable that we set up after render(). It must be inside curly braces. This directory variable and the Directory class are two separate things.*/
        /*  return (
             <div className = "container">
                 <div className = "row">
-                    {directory}   */                    {/*Adding a JS variable that we set up after render(). It must be inside curly braces. This directory variable and the Directory class are two separate things.*/}
+                    {directory}   */                    
                /*  </div>
                
             </div>

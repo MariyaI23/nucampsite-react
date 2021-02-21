@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Breadcrumb, BreadcrumbItem, Button, Label, Col, Row} from 'reactstrap';
 import {Link} from "react-router-dom";
-import { Control, Form, Errors, actions } from 'react-redux-form';
+import { Control, Form, Errors } from 'react-redux-form';
 
 /*Setting up functions to help with the validation of the react-redux form */
 /*the "required" function takes "val"(value) as an argument and checks if a value was received(that input was entered by user). Otherwise "val" will evaluate as false if it was undefined or null. */
@@ -39,8 +39,6 @@ class Contact extends Component {
                 email: false
             }
         };
-
-        {/*this.handleInputChange = this.handleInputChange.bind(this); */}    {/*This binding makes it so that we can use the "this" keyword inside the handleInputChange() method and have it point to the correct object. This line becomes redundant as we are implementing redux. */}
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
@@ -115,10 +113,10 @@ class Contact extends Component {
     /*For now we are setting up the handleSubmit() method to log the current state to the console. Since console.log expects a string, not an object, we will use a global method that will help make a string from a JS object. It is called JSON.stringify method. We are adding the same thing as an alert as well just in case so we will get this message in the console and as an alret as well. Then again we need to go back up to the constructor of the class component above and bind the "this* keyword to this event as well. After implementing react-redux-form, the word"event" in the parameter list was changed to values and (this.state) after.JSON.stringify was also replaced with values. */
     /*We are adding the resetFeedbackForm to the handleDubmit method as props to make sure that once the form is submitted the input fields will go back to their initial state and the form will be cleared. */
     handleSubmit(values) {
-        console.log("Current state is " + JSON.stringify(values));
-        alert("Current state is " + JSON.stringify(values));
+        //console.log("Current state is " + JSON.stringify(values));
+        //alert("Current state is " + JSON.stringify(values));
         this.props.resetFeedbackForm();
-       {/* event.preventDefault();  */}    {/*When we submit a form usually the whole page refreshes. To prevent that we use event.preventDefault. After implementing react-redux-form we no longer need this line as this will be handled by redux. */}
+        this.props.postFeedback(values);
     }
  
 
@@ -128,11 +126,10 @@ class Contact extends Component {
     /*Then in the form we need to set an "invalid" attribute for each inout field that we are validating.This invalid attribute will be a boolean attribute. For it's value we will set a condition that checks if there is an errors messages set for this field. An empty string will evaluate as false but if the entered input is not an empty string it will evaluate as true, so then the invalid attribute is set to true. Then below each of the inputs we are validating we'll render the <FormFeedback> component. */
     /*In the <FormFeedback> component we will render the errors message. */
     /*After we commented out the validate method we no longer need the errors variable that was calling that method. */
+    
     render() {
 
-        {/*const errors = this.validate(this.state.firstName, this.state.lastName, this.state.phoneNum, this.state.email)*/}
-
-        return (
+      return (
             <div className="container">
                 <div className="row">
                     <div className="col">

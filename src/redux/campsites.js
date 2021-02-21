@@ -7,12 +7,12 @@ import * as ActionTypes from "./ActionTypes";
 //Then in the body if the function we'll check for the type of the action and return the state. It is common to use JS switch statement for this.
 //Since we are implementing redux-thunk we will be changing the function below, so it was commented out and a it was recreated.
 
-{/*export const Campsites = (state = CAMPSITES, action) => {
+/*export const Campsites = (state = CAMPSITES, action) => {
     switch(action.type) {
         default:
             return state;
     }
-}*/}
+}*/
 
 
 //Before the state was holding directly the campsites array, but now it will hold 3 properties: a boolean isLoading property, an errMess property and the campsites array. We are initializing them all and they will be the default function parameters.

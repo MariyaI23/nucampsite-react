@@ -6,9 +6,10 @@ import {NavLink} from "react-router-dom";
 class Header extends Component {
     /*We need to add a constructor and a state in order to make the Navbar responsive. */
      /*the isModalOpen will be a boolean property initialy set to false. This property will keep track if the modal is open or not. */
+     /*Here we are binding the eventhandler(the toggleNav method) to the component, so when the eventhandler is called it will refer correctly to "this" which is the component. */
     constructor(props) {
         super(props);
-        this.toggleNav = this.toggleNav.bind(this);       {/*Here we are binding the eventhandler(the toggleNav method) to the component, so when the eventhandler is called it will refer correctly to "this" which is the component. */}
+        this.toggleNav = this.toggleNav.bind(this);       
         this.toggleModal = this.toggleModal.bind(this);
         this.handleLogin = this.handleLogin.bind(this);
 

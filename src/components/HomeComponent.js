@@ -36,6 +36,7 @@ function Home(props) {
     return (
         /*Here we will be rendering the RenderCard component and will be passing the "item" prop. The rest of the props were already passed to the HomeComponent in the MainComponent where we are actually rendering the HomeComponent*/
         /*After adding redux thunk we will now pass isLoading and errMess props to the RenderCard below */
+        
         <div className = "container">
             <div className = "row">
                 <div className = "col-md m-1">
@@ -53,7 +54,7 @@ function Home(props) {
                      />
                 </div>
                 <div className = "col-md m-1">
-                    <RenderCard item = {props.partner} />
+                    <RenderCard item = {props.partner} isLoading={props.partnerLoading} errMess={props.partnerErrMess} />
                </div>
             </div>
         </div>
